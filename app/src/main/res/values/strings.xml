@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">KakaoBank_Assignment</string>
+    <string name="menu_search">검색</string>
+    <string name="menu_storage">내 보관함</string>
+    <string name="title_storage">보관함</string>
+    <string name="hint_search">검색어를 입력하세요</string>
+    <string name="title_search_result">검색 결과</string>
+    <string name="title_search_image">이미지</string>
+    <string name="title_search_video">동영상</string>
+    <string name="img_url">imageUrl</string>
+</resources>
