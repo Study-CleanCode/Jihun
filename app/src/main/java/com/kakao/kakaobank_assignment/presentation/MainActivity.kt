@@ -23,7 +23,7 @@ class MainActivity : BindingActivity<ActivityMainBinding>(R.layout.activity_main
     private lateinit var storageFragment: StorageFragment
     private lateinit var fragmentManager: FragmentManager
     private val gson = GsonBuilder().create()
-    private val groupListType: Type = object :
+    private val kakaoMediaType: Type = object :
         TypeToken<ArrayList<KakaoMediaDto?>?>() {}.type
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,17 +37,17 @@ class MainActivity : BindingActivity<ActivityMainBinding>(R.layout.activity_main
     override fun onStart() {
         super.onStart()
 
-        val prev = PreferenceManager.getString(applicationContext, "scrapedList")
-        if (prev != "none") {
-            val tempArray: ArrayList<KakaoMediaDto> = (gson.fromJson(prev, groupListType))
-            viewModel.restoreScrapList(tempArray)
+        val scrapItemsToRestore = PreferenceManager.getString(applicationContext, "scrapedList")
+        if (scrapItemsToRestore != "none") {
+            val tempArray: ArrayList<KakaoMediaDto> = (gson.fromJson(scrapItemsToRestore, kakaoMediaType))
+            viewModel.restoreScrapItems(tempArray)
         }
     }
 
     override fun onStop() {
         super.onStop()
-        val strList = gson.toJson(viewModel.scrapedList, groupListType)
-        PreferenceManager.setString(applicationContext, "scrapedList", strList)
+        val scrapItemsToStore = gson.toJson(viewModel.scrapedItems, kakaoMediaType)
+        PreferenceManager.setString(applicationContext, "scrapedList", scrapItemsToStore)
     }
 
     private fun addListeners() {

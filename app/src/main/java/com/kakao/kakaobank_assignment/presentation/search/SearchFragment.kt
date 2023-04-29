@@ -99,7 +99,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
                         if (binding.etSearch.text.isNullOrEmpty()) {
                             mainViewModel.searchText.value = null
                         }
-                        mainViewModel.init()
+                        mainViewModel.initMedias()
                         mainViewModel.getKakaoImages()
                         ivSearchCancel.isSelected = false
                         v?.clearFocus()
@@ -181,7 +181,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
     private fun initAdapter() {
         with(binding) {
             rvSearchImage.adapter = adapter.apply {
-                submitList(mainViewModel.kakaoMediaList)
+                submitList(mainViewModel.kakaoMedias)
             }
         }
     }
@@ -189,7 +189,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
     private fun recyclerViewPaging() {
         with(binding) {
             rvSearchImage.adapter = adapter.apply {
-                submitList(mainViewModel.kakaoMediaList)
+                submitList(mainViewModel.kakaoMedias)
             }
             //restore scroll state after setting adapter
             (rvSearchImage.layoutManager as GridLayoutManager).onRestoreInstanceState(

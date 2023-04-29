@@ -28,9 +28,9 @@ class MainViewModel @Inject constructor(private val kakaoMediaRepository: KakaoM
 
     var searchText = MutableLiveData<String?>(null)
 
-    private var _kakaoMediaList = mutableListOf<KakaoMediaDto>()
-    val kakaoMediaList: List<KakaoMediaDto>
-        get() = _kakaoMediaList
+    private var _kakaoMedias = mutableListOf<KakaoMediaDto>()
+    val kakaoMedias: List<KakaoMediaDto>
+        get() = _kakaoMedias
 
     private var _isPageEnd = false
     val isPageEnd: Boolean
@@ -40,9 +40,9 @@ class MainViewModel @Inject constructor(private val kakaoMediaRepository: KakaoM
     val pageCount: Int
         get() = _pageCount
 
-    private var _scrapedList = mutableListOf<KakaoMediaDto>()
-    val scrapedList: List<KakaoMediaDto>
-        get() = _scrapedList
+    private var _scrapedItems = mutableListOf<KakaoMediaDto>()
+    val scrapedItems: List<KakaoMediaDto>
+        get() = _scrapedItems
 
     private var _scrapCount = MutableLiveData(0)
     val scrapCount: LiveData<Int>
@@ -81,19 +81,19 @@ class MainViewModel @Inject constructor(private val kakaoMediaRepository: KakaoM
                 val result = awaitAll(deferredImages, deferredVideos)
                 result
             }.onSuccess { (images, videos) ->
-                val kakaoImageList = images.first
-                val kakaoVideoList = videos.first
-                val minLength = min(kakaoImageList.size, kakaoVideoList.size)
+                val kakaoImages = images.first
+                val kakaoVideos = videos.first
+                val minLength = min(kakaoImages.size, kakaoVideos.size)
                 for (i in 0 until minLength) {
-                    with(_kakaoMediaList) {
-                        add((kakaoImageList[i] as KakaoImageDto).toMediaDto())
-                        add((kakaoVideoList[i] as KakaoVideoDto).toMediaDto())
+                    with(_kakaoMedias) {
+                        add((kakaoImages[i] as KakaoImageDto).toMediaDto())
+                        add((kakaoVideos[i] as KakaoVideoDto).toMediaDto())
                     }
                 }
                 _isPageEnd = images.second || videos.second
                 if (_pageCount > DEFAULT_PAGE_COUNT) {
                     _uiState.value = UiState.PAGED
-                } else if (_kakaoMediaList.isNotEmpty()) {
+                } else if (_kakaoMedias.isNotEmpty()) {
                     _uiState.value = UiState.Success
                 } else {
                     _uiState.value = UiState.Empty
@@ -105,28 +105,28 @@ class MainViewModel @Inject constructor(private val kakaoMediaRepository: KakaoM
     }
 
     fun scrapItem(kakaoMediaDto: KakaoMediaDto) {
-        _kakaoMediaList.forEach {
+        _kakaoMedias.forEach {
             if (it.thumbnailUrl == kakaoMediaDto.thumbnailUrl) {
                 it.isScraped = true
             }
         }
-        _scrapedList.add(kakaoMediaDto)
+        _scrapedItems.add(kakaoMediaDto)
         _scrapCount.value = _scrapCount.value?.plus(1)
     }
 
     fun scrapClear(itemInfo: String) {
-        _kakaoMediaList.forEach {
+        _kakaoMedias.forEach {
             if (it.thumbnailUrl == itemInfo) {
                 it.isScraped = false
             }
         }
         _scrapClearedItem.value = itemInfo
-        _scrapedList.removeIf { info -> info.thumbnailUrl == _scrapClearedItem.value }
+        _scrapedItems.removeIf { info -> info.thumbnailUrl == _scrapClearedItem.value }
         _scrapCount.value = _scrapCount.value?.minus(1)
     }
 
-    fun init() {
-        _kakaoMediaList.clear()
+    fun initMedias() {
+        _kakaoMedias.clear()
         _pageCount = 1
     }
 
@@ -134,8 +134,8 @@ class MainViewModel @Inject constructor(private val kakaoMediaRepository: KakaoM
         _pageCount += 1
     }
 
-    fun restoreScrapList(restoredList: ArrayList<KakaoMediaDto>) {
-        _scrapedList = restoredList
+    fun restoreScrapItems(restoredList: ArrayList<KakaoMediaDto>) {
+        _scrapedItems = restoredList
         _scrapCount.value = restoredList.size
     }
 

@@ -54,7 +54,7 @@ class StorageFragment : BindingFragment<FragmentStorageBinding>(R.layout.fragmen
     private fun initAdapter() {
         with(binding) {
             rvStorageImage.adapter = adapter.apply {
-                submitList(mainViewModel.scrapedList)
+                submitList(mainViewModel.scrapedItems)
             }
         }
     }
@@ -63,7 +63,7 @@ class StorageFragment : BindingFragment<FragmentStorageBinding>(R.layout.fragmen
         mainViewModel.scrapCount.observe(this.viewLifecycleOwner) {
             with(binding) {
                 rvStorageImage.adapter = adapter.apply {
-                    addList(mainViewModel.scrapedList)
+                    addList(mainViewModel.scrapedItems)
                 }
             }
         }
