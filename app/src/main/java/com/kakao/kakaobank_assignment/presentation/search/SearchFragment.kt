@@ -82,10 +82,21 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
             setHasFixedSize(true)
         }
     }
+    private fun searchMedias(tv:TextView?){
+        with(binding){
+            if (binding.etSearch.text.isNullOrEmpty()) {
+                mainViewModel.searchText.value = null
+            }
+            mainViewModel.initMedias()
+            mainViewModel.getKakaoImages()
+            ivSearchCancel.isSelected = false
+            tv?.clearFocus()
+            requireContext().hideKeyboard(binding.etSearch)
+        }
+    }
 
     private fun setListeners() {
         with(binding) {
-            //Search
             etSearch.setOnFocusChangeListener { _, b ->
                 ivSearchCancel.isSelected = b
             }
@@ -96,14 +107,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
                     event: KeyEvent?
                 ): Boolean {
                     if (actionId == IME_ACTION_SEARCH) {
-                        if (binding.etSearch.text.isNullOrEmpty()) {
-                            mainViewModel.searchText.value = null
-                        }
-                        mainViewModel.initMedias()
-                        mainViewModel.getKakaoImages()
-                        ivSearchCancel.isSelected = false
-                        v?.clearFocus()
-                        requireContext().hideKeyboard(binding.etSearch)
+                        searchMedias(v)
                         return true
                     }
                     return false
@@ -134,14 +138,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
                             val totalCount = recyclerView.adapter?.itemCount
                             //prevent duplicate scroll event call
                             if (SystemClock.elapsedRealtime() - lastScrollTime > 1000) {
-                                if (totalCount != null) {
-                                    if (lastPosition == totalCount - 1 && mainViewModel.pageCount < MAX_PAGE && !mainViewModel.isPageEnd) {
-                                        mainViewModel.increasePage()
-                                        mainViewModel.getKakaoImages()
-                                    } else {
-                                        showToast("맨 끝!")
-                                    }
-                                }
+                                getPagingData(lastPosition,totalCount!!)
                             }
                             lastScrollTime = SystemClock.elapsedRealtime().toInt()
                         }
@@ -159,6 +156,15 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
         }
         binding.floatingBtnScrollSearch.setOnClickListener {
             binding.rvSearchImage.smoothScrollToPosition(0)
+        }
+    }
+
+    private fun getPagingData(lastPosition: Int, totalCount: Int) {
+        if (lastPosition == totalCount - 1 && mainViewModel.pageCount < MAX_PAGE && !mainViewModel.isPageEnd) {
+            mainViewModel.increasePage()
+            mainViewModel.getKakaoImages()
+        } else {
+            showToast("맨 끝!")
         }
     }
 
