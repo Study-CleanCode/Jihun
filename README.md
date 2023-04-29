@@ -23,6 +23,7 @@
 이미지 검색 API - (https://developers.kakao.com/docs/latest/ko/daum-search/dev-guide#search-image) 의 thumbnail_url 필드
 
 동영상 검색 API - (https://developers.kakao.com/docs/latest/ko/daum-search/dev-guide#search-video) 의 thumbnail 필드
+
 두 검색 결과를 datetime필드를 이용해 정렬하여 출력(최신 순)
 Fragment는 2개 사용(하단 탭을 선택하여 전환)
 - 검색 결과 fragment
