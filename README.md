@@ -18,6 +18,7 @@
 
 # 프로젝트 설명
 이미지를 검색해서 보관함에 수집하는 안드로이드 프로젝트
+
 검색은 키워드 하나에 이미지 검색과 동영상 검색을 동시에 수행하여 얻은 두 가지 검색 결과를 사용
 
 이미지 검색 API - (https://developers.kakao.com/docs/latest/ko/daum-search/dev-guide#search-image) 의 thumbnail_url 필드
