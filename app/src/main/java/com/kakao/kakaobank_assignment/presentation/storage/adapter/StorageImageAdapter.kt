@@ -36,10 +36,10 @@ class StorageImageAdapter(private val listener: OnItemClick, private val sListen
         return position
     }
 
-    fun addList(list: List<KakaoMediaDto>) {
-        val newList = mutableListOf<KakaoMediaDto>()
-        newList.addAll(list)
-        submitList(newList)
+    fun updateData(data: List<KakaoMediaDto>) {
+        val newData = mutableListOf<KakaoMediaDto>()
+        newData.addAll(data)
+        submitList(newData)
     }
 
     fun removeData(position: Int) {

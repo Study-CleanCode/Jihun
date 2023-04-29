@@ -75,7 +75,6 @@ object PreferenceManager {
         return prefs.getFloat(key, DEFAULT_VALUE_FLOAT)
     }
 
-    /**키 값 삭제*/
     fun removeKey(context: Context, key: String?) {
         val prefs = getPreferences(context)
         val edit = prefs.edit()
@@ -86,8 +85,8 @@ object PreferenceManager {
     /**모든 저장 데이터 삭제*/
     fun clear(context: Context) {
         val prefs = getPreferences(context)
-        val edit = prefs.edit()
-        edit.clear()
-        edit.apply()
+        val editor = prefs.edit()
+        editor.clear()
+        editor.apply()
     }
 }
