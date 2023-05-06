@@ -47,7 +47,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
 
     override fun onResume() {
         super.onResume()
-        //restore scroll state after setting adapter
+        restoreScrollState()
+    }
+
+    private fun restoreScrollState(){
         if (::recyclerViewState.isInitialized) {
             (binding.rvSearchImage.layoutManager as GridLayoutManager).onRestoreInstanceState(
                 recyclerViewState
@@ -57,7 +60,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
 
     override fun onPause() {
         super.onPause()
-        //store scroll state
+        storeScrollState()
+    }
+
+    private fun storeScrollState(){
         recyclerViewState =
             (binding.rvSearchImage.layoutManager as GridLayoutManager).onSaveInstanceState()!!
     }
@@ -105,7 +111,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
                             val totalCount = recyclerView.adapter?.itemCount
                             //prevent duplicate scroll event call
                             if (SystemClock.elapsedRealtime() - lastScrollTime > 1000) {
-                                getPagingData(lastPosition,totalCount!!)
+                                loadMoreItems(lastPosition,totalCount!!)
                             }
                             lastScrollTime = SystemClock.elapsedRealtime().toInt()
                         }
@@ -139,7 +145,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
         }
     }
 
-    private fun getPagingData(lastPosition: Int, totalCount: Int) {
+    private fun loadMoreItems(lastPosition: Int, totalCount: Int) {
         if (lastPosition == totalCount - 1 && mainViewModel.pageCount < MAX_PAGE && !mainViewModel.isPageEnd) {
             mainViewModel.increasePage()
             mainViewModel.getKakaoImages()
@@ -170,9 +176,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
                 submitList(mainViewModel.kakaoMedias)
             }
             //restore scroll state after setting adapter
-            (rvSearchImage.layoutManager as GridLayoutManager).onRestoreInstanceState(
-                recyclerViewState
-            )
+            restoreScrollState()
         }
     }
 
