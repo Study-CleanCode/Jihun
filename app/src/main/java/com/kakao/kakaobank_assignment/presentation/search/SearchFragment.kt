@@ -47,7 +47,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
 
     override fun onResume() {
         super.onResume()
-        //restore scroll state after setting adapter
+        restoreScrollState()
+    }
+
+    private fun restoreScrollState(){
         if (::recyclerViewState.isInitialized) {
             (binding.rvSearchImage.layoutManager as GridLayoutManager).onRestoreInstanceState(
                 recyclerViewState
@@ -57,44 +60,14 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
 
     override fun onPause() {
         super.onPause()
-        //store scroll state
+        storeScrollState()
+    }
+
+    private fun storeScrollState(){
         recyclerViewState =
             (binding.rvSearchImage.layoutManager as GridLayoutManager).onSaveInstanceState()!!
     }
-
-
-    private fun initLayout() {
-        with(binding) {
-            vm = mainViewModel
-            lifecycleOwner = this@SearchFragment.viewLifecycleOwner
-            floatingBtnScrollSearch.setIconResource(R.drawable.search_arrow_scroll)
-        }
-        with(binding.rvSearchImage) {
-            layoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
-            addItemDecoration(
-                GridSpacingItemDecoration(
-                    requireContext(),
-                    SPAN_COUNT,
-                    SPACE,
-                    SPACE_TOP
-                )
-            )
-            setHasFixedSize(true)
-        }
-    }
-    private fun searchMedias(tv:TextView?){
-        with(binding){
-            if (binding.etSearch.text.isNullOrEmpty()) {
-                mainViewModel.searchText.value = null
-            }
-            mainViewModel.initMedias()
-            mainViewModel.getKakaoImages()
-            ivSearchCancel.isSelected = false
-            tv?.clearFocus()
-            requireContext().hideKeyboard(binding.etSearch)
-        }
-    }
-
+    
     private fun setListeners() {
         with(binding) {
             etSearch.setOnFocusChangeListener { _, b ->
@@ -138,7 +111,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
                             val totalCount = recyclerView.adapter?.itemCount
                             //prevent duplicate scroll event call
                             if (SystemClock.elapsedRealtime() - lastScrollTime > 1000) {
-                                getPagingData(lastPosition,totalCount!!)
+                                loadMoreItems(lastPosition,totalCount!!)
                             }
                             lastScrollTime = SystemClock.elapsedRealtime().toInt()
                         }
@@ -159,7 +132,20 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
         }
     }
 
-    private fun getPagingData(lastPosition: Int, totalCount: Int) {
+    private fun searchMedias(tv:TextView?){
+        with(binding){
+            if (binding.etSearch.text.isNullOrEmpty()) {
+                mainViewModel.searchText.value = null
+            }
+            mainViewModel.initMedias()
+            mainViewModel.getKakaoImages()
+            ivSearchCancel.isSelected = false
+            tv?.clearFocus()
+            requireContext().hideKeyboard(binding.etSearch)
+        }
+    }
+
+    private fun loadMoreItems(lastPosition: Int, totalCount: Int) {
         if (lastPosition == totalCount - 1 && mainViewModel.pageCount < MAX_PAGE && !mainViewModel.isPageEnd) {
             mainViewModel.increasePage()
             mainViewModel.getKakaoImages()
@@ -184,6 +170,16 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
         }
     }
 
+    private fun recyclerViewPaging() {
+        with(binding) {
+            rvSearchImage.adapter = adapter.apply {
+                submitList(mainViewModel.kakaoMedias)
+            }
+            //restore scroll state after setting adapter
+            restoreScrollState()
+        }
+    }
+
     private fun initAdapter() {
         with(binding) {
             rvSearchImage.adapter = adapter.apply {
@@ -192,15 +188,23 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
         }
     }
 
-    private fun recyclerViewPaging() {
+    private fun initLayout() {
         with(binding) {
-            rvSearchImage.adapter = adapter.apply {
-                submitList(mainViewModel.kakaoMedias)
-            }
-            //restore scroll state after setting adapter
-            (rvSearchImage.layoutManager as GridLayoutManager).onRestoreInstanceState(
-                recyclerViewState
+            vm = mainViewModel
+            lifecycleOwner = this@SearchFragment.viewLifecycleOwner
+            floatingBtnScrollSearch.setIconResource(R.drawable.search_arrow_scroll)
+        }
+        with(binding.rvSearchImage) {
+            layoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
+            addItemDecoration(
+                GridSpacingItemDecoration(
+                    requireContext(),
+                    SPAN_COUNT,
+                    SPACE,
+                    SPACE_TOP
+                )
             )
+            setHasFixedSize(true)
         }
     }
 
