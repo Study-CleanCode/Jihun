@@ -61,40 +61,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
         recyclerViewState =
             (binding.rvSearchImage.layoutManager as GridLayoutManager).onSaveInstanceState()!!
     }
-
-
-    private fun initLayout() {
-        with(binding) {
-            vm = mainViewModel
-            lifecycleOwner = this@SearchFragment.viewLifecycleOwner
-            floatingBtnScrollSearch.setIconResource(R.drawable.search_arrow_scroll)
-        }
-        with(binding.rvSearchImage) {
-            layoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
-            addItemDecoration(
-                GridSpacingItemDecoration(
-                    requireContext(),
-                    SPAN_COUNT,
-                    SPACE,
-                    SPACE_TOP
-                )
-            )
-            setHasFixedSize(true)
-        }
-    }
-    private fun searchMedias(tv:TextView?){
-        with(binding){
-            if (binding.etSearch.text.isNullOrEmpty()) {
-                mainViewModel.searchText.value = null
-            }
-            mainViewModel.initMedias()
-            mainViewModel.getKakaoImages()
-            ivSearchCancel.isSelected = false
-            tv?.clearFocus()
-            requireContext().hideKeyboard(binding.etSearch)
-        }
-    }
-
+    
     private fun setListeners() {
         with(binding) {
             etSearch.setOnFocusChangeListener { _, b ->
@@ -159,6 +126,19 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
         }
     }
 
+    private fun searchMedias(tv:TextView?){
+        with(binding){
+            if (binding.etSearch.text.isNullOrEmpty()) {
+                mainViewModel.searchText.value = null
+            }
+            mainViewModel.initMedias()
+            mainViewModel.getKakaoImages()
+            ivSearchCancel.isSelected = false
+            tv?.clearFocus()
+            requireContext().hideKeyboard(binding.etSearch)
+        }
+    }
+
     private fun getPagingData(lastPosition: Int, totalCount: Int) {
         if (lastPosition == totalCount - 1 && mainViewModel.pageCount < MAX_PAGE && !mainViewModel.isPageEnd) {
             mainViewModel.increasePage()
@@ -184,14 +164,6 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
         }
     }
 
-    private fun initAdapter() {
-        with(binding) {
-            rvSearchImage.adapter = adapter.apply {
-                submitList(mainViewModel.kakaoMedias)
-            }
-        }
-    }
-
     private fun recyclerViewPaging() {
         with(binding) {
             rvSearchImage.adapter = adapter.apply {
@@ -201,6 +173,34 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>(R.layout.fragment_
             (rvSearchImage.layoutManager as GridLayoutManager).onRestoreInstanceState(
                 recyclerViewState
             )
+        }
+    }
+
+    private fun initAdapter() {
+        with(binding) {
+            rvSearchImage.adapter = adapter.apply {
+                submitList(mainViewModel.kakaoMedias)
+            }
+        }
+    }
+
+    private fun initLayout() {
+        with(binding) {
+            vm = mainViewModel
+            lifecycleOwner = this@SearchFragment.viewLifecycleOwner
+            floatingBtnScrollSearch.setIconResource(R.drawable.search_arrow_scroll)
+        }
+        with(binding.rvSearchImage) {
+            layoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
+            addItemDecoration(
+                GridSpacingItemDecoration(
+                    requireContext(),
+                    SPAN_COUNT,
+                    SPACE,
+                    SPACE_TOP
+                )
+            )
+            setHasFixedSize(true)
         }
     }
 
